@@ -18,44 +18,25 @@ export default function HeroSection({ heroData }: HeroSectionProps) {
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [contentVisible, setContentVisible] = useState(false);
-  const [isMobile, setIsMobile] = useState(true); // Default to mobile for safety
-  const [canScrollAway, setCanScrollAway] = useState(false); // Allow scroll after content visible
   const imagesRef = useRef<HTMLImageElement[]>([]);
-  const progressRef = useRef(0); // Use ref for touch progress
-  const contentVisibleRef = useRef(false);
-  const canScrollAwayRef = useRef(false);
-
-  // Check if mobile
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
   // Preload all frames
   useEffect(() => {
-    const loadImages = async () => {
-      const images: HTMLImageElement[] = [];
-      let loaded = 0;
+    const images: HTMLImageElement[] = [];
+    let loaded = 0;
 
-      for (let i = 1; i <= TOTAL_ANIMATION_FRAMES; i++) {
-        const img = new Image();
-        img.src = `/hero_animation/ezgif-frame-${String(i).padStart(3, '0')}.jpg`;
-        img.onload = () => {
-          loaded++;
-          if (loaded === TOTAL_ANIMATION_FRAMES) {
-            setImagesLoaded(true);
-          }
-        };
-        images.push(img);
-      }
-      imagesRef.current = images;
-    };
-
-    loadImages();
+    for (let i = 1; i <= TOTAL_ANIMATION_FRAMES; i++) {
+      const img = new Image();
+      img.src = `/hero_animation/ezgif-frame-${String(i).padStart(3, '0')}.jpg`;
+      img.onload = () => {
+        loaded++;
+        if (loaded === TOTAL_ANIMATION_FRAMES) {
+          setImagesLoaded(true);
+        }
+      };
+      images.push(img);
+    }
+    imagesRef.current = images;
   }, []);
 
   // Draw current frame on canvas - full screen cover
@@ -73,7 +54,9 @@ export default function HeroSection({ heroData }: HeroSectionProps) {
       canvas.height = height * scale;
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
-      ctx.scale(scale, scale);
+      // Reset transform before scaling to avoid cumulative scaling artifacts
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.setTransform(scale, 0, 0, scale, 0, 0);
 
       // Cover entire screen (crop to fill)
       const imgAspect = img.width / img.height;
@@ -82,13 +65,11 @@ export default function HeroSection({ heroData }: HeroSectionProps) {
       let drawWidth, drawHeight, drawX, drawY;
 
       if (imgAspect > screenAspect) {
-        // Image is wider - fit height, crop sides
         drawHeight = height;
         drawWidth = height * imgAspect;
         drawX = (width - drawWidth) / 2;
         drawY = 0;
       } else {
-        // Image is taller - fit width, crop top/bottom
         drawWidth = width;
         drawHeight = width / imgAspect;
         drawX = 0;
@@ -100,10 +81,8 @@ export default function HeroSection({ heroData }: HeroSectionProps) {
     }
   }, []);
 
-  // Handle scroll-driven animation - bidirectional (desktop only)
+  // Handle scroll-driven animation - works for both mobile and desktop
   useEffect(() => {
-    if (isMobile) return; // Skip scroll handling on mobile
-
     const handleScroll = () => {
       if (!containerRef.current) return;
 
@@ -119,104 +98,31 @@ export default function HeroSection({ heroData }: HeroSectionProps) {
       const animationProgress = Math.min(1, progress / 0.8);
       
       if (animationProgress < 1) {
-        // During animation: show frames 0 to 160
         const newFrameIndex = Math.floor(animationProgress * (TOTAL_ANIMATION_FRAMES - 1));
         setFrameIndex(newFrameIndex);
         setContentVisible(false);
       } else {
-        // After animation: show first frame (index 0)
         setFrameIndex(0);
         setContentVisible(true);
       }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Initial call
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [isMobile]);
+  }, []);
 
-  // Touch-based animation control for mobile
+  // Draw frame when index changes
   useEffect(() => {
-    if (!isMobile) return;
-    
-    let touchStartY = 0;
-    let hasScrolledAfterContent = false;
-
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartY = e.touches[0].clientY;
-      hasScrolledAfterContent = false;
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      const touchY = e.touches[0].clientY;
-      const deltaY = touchStartY - touchY;
-      
-      // If content is visible and user scrolls down, allow scroll away
-      if (contentVisibleRef.current && !canScrollAwayRef.current && deltaY > 20) {
-        canScrollAwayRef.current = true;
-        setCanScrollAway(true);
-        return;
-      }
-      
-      // If can scroll away, don't process animation
-      if (canScrollAwayRef.current) return;
-      
-      const sensitivity = 0.004;
-      const newProgress = Math.min(1, Math.max(0, progressRef.current + deltaY * sensitivity));
-      progressRef.current = newProgress;
-      
-      setScrollProgress(newProgress);
-      
-      // Animation phase: 0 to 0.8 of progress
-      const animationProgress = Math.min(1, newProgress / 0.8);
-      
-      if (animationProgress < 1) {
-        const newFrameIndex = Math.floor(animationProgress * (TOTAL_ANIMATION_FRAMES - 1));
-        setFrameIndex(newFrameIndex);
-        setContentVisible(false);
-        contentVisibleRef.current = false;
-      } else {
-        setFrameIndex(0);
-        setContentVisible(true);
-        contentVisibleRef.current = true;
-      }
-      
-      touchStartY = touchY;
-    };
-
-    const container = containerRef.current;
-    if (container) {
-      container.addEventListener('touchstart', handleTouchStart, { passive: true });
-      container.addEventListener('touchmove', handleTouchMove, { passive: true });
-    }
-
-    return () => {
-      if (container) {
-        container.removeEventListener('touchstart', handleTouchStart);
-        container.removeEventListener('touchmove', handleTouchMove);
-      }
-    };
-  }, [isMobile]);
-
-  // Draw frame when index changes or images load
-  useEffect(() => {
-    if (imagesLoaded && canvasRef.current) {
-      requestAnimationFrame(() => {
-        drawFrame(frameIndex);
-      });
+    if (imagesLoaded) {
+      drawFrame(frameIndex);
     }
   }, [frameIndex, imagesLoaded, drawFrame]);
 
-  // Force initial draw when images load
+  // Initial draw
   useEffect(() => {
-    if (imagesLoaded && canvasRef.current) {
-      // Multiple attempts to ensure draw happens
+    if (imagesLoaded) {
       drawFrame(0);
-      const timer1 = setTimeout(() => drawFrame(0), 100);
-      const timer2 = setTimeout(() => drawFrame(0), 300);
-      return () => {
-        clearTimeout(timer1);
-        clearTimeout(timer2);
-      };
     }
   }, [imagesLoaded, drawFrame]);
 
@@ -229,17 +135,12 @@ export default function HeroSection({ heroData }: HeroSectionProps) {
     return () => window.removeEventListener('resize', handleResize);
   }, [frameIndex, drawFrame]);
 
-  // Calculate animation position based on scroll progress
-  const isAnimating = scrollProgress > 0 && scrollProgress < 0.8;
   const isComplete = scrollProgress >= 0.8;
 
   return (
     <section 
       id="home" 
-      className="relative bg-black md:min-h-[400vh]" 
-      style={{ 
-        height: isMobile && !canScrollAway ? '100vh' : isMobile ? '200vh' : undefined 
-      }}
+      className="relative min-h-[300vh] md:min-h-[400vh] bg-black" 
       ref={containerRef}
     >
       {/* Sticky container for animation */}
@@ -248,8 +149,8 @@ export default function HeroSection({ heroData }: HeroSectionProps) {
         <div 
           className="absolute inset-0 h-full md:inset-y-0 md:right-0 md:left-auto"
           style={{
-            width: isComplete && !isMobile ? '70%' : '100%',
-            opacity: isComplete && isMobile ? 0.3 : 1,
+            width: isComplete ? (typeof window !== 'undefined' && window.innerWidth >= 768 ? '70%' : '100%') : '100%',
+            opacity: isComplete && typeof window !== 'undefined' && window.innerWidth < 768 ? 0.3 : 1,
             transition: 'width 0.5s ease, opacity 0.5s ease'
           }}
         >
@@ -265,11 +166,11 @@ export default function HeroSection({ heroData }: HeroSectionProps) {
         </div>
 
         {/* Dark overlay for mobile when content visible */}
-        {contentVisible && isMobile && (
-          <div className="absolute inset-0 bg-black/60 z-0" />
+        {contentVisible && (
+          <div className="absolute inset-0 bg-black/60 md:hidden z-0" />
         )}
 
-        {/* Hero Content - Mobile: centered, Desktop: left side */}
+        {/* Hero Content */}
         <AnimatePresence>
           {contentVisible && heroData && (
             <motion.div
@@ -359,7 +260,7 @@ export default function HeroSection({ heroData }: HeroSectionProps) {
           )}
         </AnimatePresence>
 
-        {/* Scroll indicator - Show when at start */}
+        {/* Scroll indicator */}
         {scrollProgress < 0.1 && (
           <motion.div
             className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
@@ -375,8 +276,8 @@ export default function HeroSection({ heroData }: HeroSectionProps) {
           </motion.div>
         )}
 
-        {/* Continue scroll indicator - Show when content is visible (desktop only) */}
-        {contentVisible && scrollProgress > 0.85 && !isMobile && (
+        {/* Continue scroll indicator */}
+        {contentVisible && scrollProgress > 0.85 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -392,9 +293,9 @@ export default function HeroSection({ heroData }: HeroSectionProps) {
         )}
 
         {/* Progress bar */}
-        <div className="absolute bottom-0 left-0 w-full h-1 bg-gray-200/30 dark:bg-gray-800/30">
-          <motion.div
-            className="h-full bg-primary-600"
+        <div className="absolute bottom-0 left-0 w-full h-1 bg-gray-200/30">
+          <div
+            className="h-full bg-primary-600 transition-all duration-100"
             style={{ width: `${Math.min(100, scrollProgress * 125)}%` }}
           />
         </div>

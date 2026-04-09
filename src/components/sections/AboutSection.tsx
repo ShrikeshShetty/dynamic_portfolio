@@ -84,12 +84,14 @@ export default function AboutSection({ aboutData }: AboutSectionProps) {
                     initial={{ opacity: 0, y: 20 }}
                     animate={inView ? { opacity: 1, y: 0 } : {}}
                     transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
-                    className="flex items-center gap-3 p-3 rounded-lg bg-white dark:bg-gray-800 shadow-sm"
+                    className="flex items-center gap-3 p-3 rounded-lg bg-white dark:bg-gray-800 shadow-sm overflow-hidden"
                   >
                     <item.icon className="w-5 h-5 text-primary-600 flex-shrink-0" />
-                    <div className="flex items-center gap-2 flex-1">
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
                       <p className="text-sm text-gray-500 dark:text-gray-400 flex-shrink-0">{item.label}:</p>
-                      <p className="text-gray-900 dark:text-white font-medium whitespace-nowrap">{item.value}</p>
+                      <p className="text-gray-900 dark:text-white font-medium whitespace-nowrap overflow-hidden text-ellipsis min-w-0">
+                        {item.value}
+                      </p>
                     </div>
                   </motion.div>
                 ))}
