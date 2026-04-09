@@ -6,7 +6,7 @@ import { generateId } from '@/lib/utils';
 
 export async function GET() {
   try {
-    const allClientProjects = await db.select().from(clientProjects).orderBy(clientProjects.order);
+    const allClientProjects = await db.select().from(clientProjects).orderBy(clientProjects.sortOrder);
     return NextResponse.json(allClientProjects);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch client projects' }, { status: 500 });
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
       title: body.title,
       clientName: body.clientName,
       description: body.description,
-      order: body.order || 0,
+      sortOrder: body.sortOrder || 0,
     }).returning();
     return NextResponse.json(created[0]);
   } catch (error) {
@@ -39,7 +39,7 @@ export async function PUT(request: NextRequest) {
         title: body.title,
         clientName: body.clientName,
         description: body.description,
-        order: body.order,
+        sortOrder: body.sortOrder,
       })
       .where(eq(clientProjects.id, body.id))
       .returning();

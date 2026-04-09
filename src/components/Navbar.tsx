@@ -38,6 +38,7 @@ export default function Navbar() {
           ? 'bg-white/90 dark:bg-gray-900/90 backdrop-blur-md shadow-lg'
           : 'bg-transparent'
       )}
+      style={{ '--nav-text-color': scrolled ? 'auto' : 'white' } as React.CSSProperties}
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
@@ -46,6 +47,7 @@ export default function Navbar() {
             href="#home"
             className="text-xl font-bold text-gray-900 dark:text-white"
             whileHover={{ scale: 1.05 }}
+            style={{ color: scrolled ? undefined : 'white' }}
           >
             Portfolio
           </motion.a>
@@ -82,19 +84,20 @@ export default function Navbar() {
           <div className="md:hidden flex items-center gap-4">
             <motion.button
               onClick={toggleTheme}
-              className="p-2 rounded-full bg-gray-100 dark:bg-gray-800"
+              className="p-2 rounded-full bg-white/20 backdrop-blur-sm"
               whileTap={{ scale: 0.9 }}
             >
               {theme === 'dark' ? (
                 <Sun className="w-5 h-5 text-yellow-500" />
               ) : (
-                <Moon className="w-5 h-5 text-gray-700" />
+                <Moon className="w-5 h-5 text-white" />
               )}
             </motion.button>
             
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 text-gray-600 dark:text-gray-300"
+              className="p-2 rounded-full bg-white/20 backdrop-blur-sm"
+              style={{ color: scrolled ? undefined : 'white' }}
             >
               {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>

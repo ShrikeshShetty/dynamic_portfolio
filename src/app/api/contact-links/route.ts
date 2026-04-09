@@ -6,7 +6,7 @@ import { generateId } from '@/lib/utils';
 
 export async function GET() {
   try {
-    const links = await db.select().from(contactLinks).orderBy(contactLinks.order);
+    const links = await db.select().from(contactLinks).orderBy(contactLinks.sortOrder);
     return NextResponse.json(links);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch contact links' }, { status: 500 });
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       type: body.type,
       url: body.url,
       displayText: body.displayText,
-      order: body.order || 0,
+      sortOrder: body.sortOrder || 0,
     }).returning();
     return NextResponse.json(created[0]);
   } catch (error) {
@@ -37,7 +37,7 @@ export async function PUT(request: NextRequest) {
         type: body.type,
         url: body.url,
         displayText: body.displayText,
-        order: body.order,
+        sortOrder: body.sortOrder,
       })
       .where(eq(contactLinks.id, body.id))
       .returning();

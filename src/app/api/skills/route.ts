@@ -6,7 +6,7 @@ import { generateId } from '@/lib/utils';
 
 export async function GET() {
   try {
-    const allSkills = await db.select().from(skills).orderBy(skills.order);
+    const allSkills = await db.select().from(skills).orderBy(skills.sortOrder);
     return NextResponse.json(allSkills);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch skills' }, { status: 500 });
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       category: body.category,
       name: body.name,
       percentage: body.percentage,
-      order: body.order || 0,
+      sortOrder: body.sortOrder || 0,
     }).returning();
     return NextResponse.json(created[0]);
   } catch (error) {
@@ -37,7 +37,7 @@ export async function PUT(request: NextRequest) {
         category: body.category,
         name: body.name,
         percentage: body.percentage,
-        order: body.order,
+        sortOrder: body.sortOrder,
       })
       .where(eq(skills.id, body.id))
       .returning();

@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { 
-  Home, User, Code, FolderKanban, Users, Link2, FileText, 
-  Menu, X, LogOut, Settings 
+import { usePathname, useRouter } from 'next/navigation';
+import {
+  Home, User, Code, FolderKanban, Users, Link2, FileText,
+  Menu, X, LogOut, Settings
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -27,7 +27,45 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
+  const [checking, setChecking] = useState(true);
   const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    // Check authentication
+    const isAuth = sessionStorage.getItem('adminAuthenticated') === 'true';
+    if (!isAuth && pathname !== '/operator/admin/login') {
+      router.push('/operator/admin/login');
+    } else if (isAuth) {
+      setAuthenticated(true);
+    }
+    setChecking(false);
+  }, [pathname, router]);
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('adminAuthenticated');
+    router.push('/operator/admin/login');
+  };
+
+  // Don't show layout for login page
+  if (pathname === '/operator/admin/login') {
+    return <>{children}</>;
+  }
+
+  // Show loading while checking auth
+  if (checking) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      </div>
+    );
+  }
+
+  // Redirect if not authenticated
+  if (!authenticated) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -77,13 +115,21 @@ export default function AdminLayout({
               })}
             </nav>
 
-            <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700">
-              <Link href="/">
+            <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
+              <Link href="/" className="block">
                 <Button variant="outline" className="w-full">
                   <LogOut className="w-4 h-4 mr-2" />
                   Back to Site
                 </Button>
               </Link>
+              <Button
+                variant="ghost"
+                className="w-full text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                onClick={handleLogout}
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
+              </Button>
             </div>
           </motion.aside>
         )}

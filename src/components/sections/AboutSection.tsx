@@ -77,7 +77,7 @@ export default function AboutSection({ aboutData }: AboutSectionProps) {
               </p>
 
               {/* Info Items */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+              <div className="grid grid-cols-1 gap-4 mb-8">
                 {infoItems.map((item, index) => (
                   <motion.div
                     key={item.label}
@@ -86,10 +86,10 @@ export default function AboutSection({ aboutData }: AboutSectionProps) {
                     transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
                     className="flex items-center gap-3 p-3 rounded-lg bg-white dark:bg-gray-800 shadow-sm"
                   >
-                    <item.icon className="w-5 h-5 text-primary-600" />
-                    <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">{item.label}</p>
-                      <p className="text-gray-900 dark:text-white font-medium">{item.value}</p>
+                    <item.icon className="w-5 h-5 text-primary-600 flex-shrink-0" />
+                    <div className="flex items-center gap-2 flex-1">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 flex-shrink-0">{item.label}:</p>
+                      <p className="text-gray-900 dark:text-white font-medium whitespace-nowrap">{item.value}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -108,7 +108,7 @@ export default function AboutSection({ aboutData }: AboutSectionProps) {
                     <stat.icon className="w-6 h-6 text-primary-600 mx-auto mb-2" />
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
                       {inView && (
-                        <CountUp end={stat.value} duration={2} />
+                        <CountUp start={0} end={stat.value || 0} duration={2.5} separator="," />
                       )}
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">{stat.label}</p>

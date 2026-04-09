@@ -115,22 +115,25 @@ export default function AboutAdminPage() {
                     </button>
                   </div>
                 )}
-                <label className="cursor-pointer">
-                  <input
+                <input
                     type="file"
+                    id="image-upload"
                     accept="image/*"
                     onChange={handleImageUpload}
                     className="hidden"
                   />
-                  <Button type="button" variant="outline" disabled={uploading}>
-                    {uploading ? (
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    ) : (
-                      <Upload className="w-4 h-4 mr-2" />
-                    )}
-                    Upload Image
-                  </Button>
-                </label>
+                  <label htmlFor="image-upload" className="inline-block cursor-pointer">
+                    <Button type="button" variant="outline" disabled={uploading} asChild>
+                      <span>
+                        {uploading ? (
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        ) : (
+                          <Upload className="w-4 h-4 mr-2" />
+                        )}
+                        Upload Image
+                      </span>
+                    </Button>
+                  </label>
               </div>
             </div>
 

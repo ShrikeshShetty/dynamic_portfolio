@@ -6,7 +6,7 @@ import { generateId } from '@/lib/utils';
 
 export async function GET() {
   try {
-    const allProjects = await db.select().from(projects).orderBy(projects.order);
+    const allProjects = await db.select().from(projects).orderBy(projects.sortOrder);
     return NextResponse.json(allProjects);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch projects' }, { status: 500 });
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       techStack: body.techStack,
       githubLink: body.githubLink,
       description: body.description,
-      order: body.order || 0,
+      sortOrder: body.sortOrder || 0,
     }).returning();
     return NextResponse.json(created[0]);
   } catch (error) {
@@ -41,7 +41,7 @@ export async function PUT(request: NextRequest) {
         techStack: body.techStack,
         githubLink: body.githubLink,
         description: body.description,
-        order: body.order,
+        sortOrder: body.sortOrder,
       })
       .where(eq(projects.id, body.id))
       .returning();

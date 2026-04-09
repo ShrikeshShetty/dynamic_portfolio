@@ -4,7 +4,7 @@ import { relations } from 'drizzle-orm';
 // Hero Section
 export const heroSection = pgTable('hero_section', {
   id: varchar('id', { length: 36 }).primaryKey().default('default'),
-  introLine: text('intro_line').notNull().default("Hi, I'm Shrikesh Uday Shetty"),
+  introLine: text('intro_line').notNull().default("Hi, I''m Shrikesh Uday Shetty"),
   role: text('role').notNull().default('Full Stack Developer'),
   description: text('description').notNull(),
   email: text('email').notNull().default('shrikesh123shetty@gmail.com'),
@@ -36,7 +36,7 @@ export const skills = pgTable('skills', {
   category: varchar('category', { length: 50 }).notNull(), // 'frontend', 'backend', 'tools'
   name: text('name').notNull(),
   percentage: integer('percentage').notNull(),
-  order: integer('order').default(0),
+  sortOrder: integer('sort_order').default(0),
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -48,7 +48,7 @@ export const projects = pgTable('projects', {
   techStack: text('tech_stack').notNull(),
   githubLink: text('github_link'),
   description: text('description'),
-  order: integer('order').default(0),
+  sortOrder: integer('sort_order').default(0),
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -59,7 +59,7 @@ export const clientProjects = pgTable('client_projects', {
   title: text('title').notNull(),
   clientName: text('client_name').notNull(),
   description: text('description').notNull(),
-  order: integer('order').default(0),
+  sortOrder: integer('sort_order').default(0),
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -69,7 +69,7 @@ export const contactLinks = pgTable('contact_links', {
   type: varchar('type', { length: 20 }).notNull(), // 'email', 'github', 'linkedin'
   url: text('url').notNull(),
   displayText: text('display_text'),
-  order: integer('order').default(0),
+  sortOrder: integer('sort_order').default(0),
   createdAt: timestamp('created_at').defaultNow(),
 });
 

@@ -116,22 +116,25 @@ export default function ResumeAdminPage() {
               </div>
 
               <div>
-                <label className="cursor-pointer">
-                  <input
+                <input
                     type="file"
+                    id="resume-upload-new"
                     accept="application/pdf"
                     onChange={handleUpload}
                     className="hidden"
                   />
-                  <Button variant="outline" disabled={uploading}>
-                    {uploading ? (
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    ) : (
-                      <Upload className="w-4 h-4 mr-2" />
-                    )}
-                    Upload New Resume
-                  </Button>
-                </label>
+                  <label htmlFor="resume-upload-new" className="inline-block cursor-pointer">
+                    <Button variant="outline" disabled={uploading} asChild>
+                      <span>
+                        {uploading ? (
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        ) : (
+                          <Upload className="w-4 h-4 mr-2" />
+                        )}
+                        Upload New Resume
+                      </span>
+                    </Button>
+                  </label>
               </div>
             </div>
           ) : (
@@ -140,20 +143,23 @@ export default function ResumeAdminPage() {
               <p className="text-gray-500 dark:text-gray-400 mb-6">
                 No resume uploaded yet
               </p>
-              <label className="cursor-pointer">
-                <input
-                  type="file"
-                  accept="application/pdf"
-                  onChange={handleUpload}
-                  className="hidden"
-                />
-                <Button disabled={uploading}>
-                  {uploading ? (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  ) : (
-                    <Upload className="w-4 h-4 mr-2" />
-                  )}
-                  Upload Resume (PDF)
+              <input
+                type="file"
+                id="resume-upload"
+                accept="application/pdf"
+                onChange={handleUpload}
+                className="hidden"
+              />
+              <label htmlFor="resume-upload" className="inline-block cursor-pointer">
+                <Button disabled={uploading} asChild>
+                  <span>
+                    {uploading ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <Upload className="w-4 h-4 mr-2" />
+                    )}
+                    Upload Resume (PDF)
+                  </span>
                 </Button>
               </label>
             </div>
