@@ -106,16 +106,16 @@ export default function ContactLinksAdminPage() {
   return (
     <div className="max-w-4xl mx-auto">
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <CardTitle>Contact Links</CardTitle>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button onClick={openAddDialog}>
+              <Button onClick={openAddDialog} className="w-full sm:w-auto">
                 <Plus className="w-4 h-4 mr-2" />
                 Add Contact Link
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-md mx-4">
               <DialogHeader>
                 <DialogTitle>{editingLink ? 'Edit Contact Link' : 'Add Contact Link'}</DialogTitle>
               </DialogHeader>
@@ -161,14 +161,14 @@ export default function ContactLinksAdminPage() {
         <CardContent>
           <div className="space-y-4">
             {contactLinks.map((link) => (
-              <div key={link.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <div>
+              <div key={link.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <div className="flex-1 min-w-0">
                   <span className="inline-block px-2 py-1 text-xs font-medium bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 rounded mb-1">
                     {CONTACT_TYPES[link.type as keyof typeof CONTACT_TYPES] || link.type}
                   </span>
-                  <p className="text-gray-900 dark:text-white">{link.displayText || link.url}</p>
+                  <p className="text-gray-900 dark:text-white truncate">{link.displayText || link.url}</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-shrink-0">
                   <Button variant="outline" size="sm" onClick={() => openEditDialog(link)}>
                     <Edit className="w-4 h-4" />
                   </Button>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Sun, Moon } from 'lucide-react';
+import { Menu, X, Sun, Moon, FileText } from 'lucide-react';
 import { NAV_ITEMS } from '@/lib/constants';
 import { useTheme } from './ThemeProvider';
 import { cn } from '@/lib/utils';
@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [resumeUrl, setResumeUrl] = useState<string | null>(null);
   const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
@@ -18,6 +19,18 @@ export default function Navbar() {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    // Fetch resume URL
+    fetch('/api/resume')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.fileUrl) {
+          setResumeUrl(data.fileUrl);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const handleNavClick = (href: string) => {
@@ -53,29 +66,55 @@ export default function Navbar() {
           </motion.a>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-6">
             {NAV_ITEMS.map((item) => (
               <motion.button
                 key={item.href}
                 onClick={() => handleNavClick(item.href)}
-                className="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                className="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors text-sm"
+                style={{ color: scrolled ? undefined : 'white' }}
                 whileHover={{ y: -2 }}
               >
                 {item.label}
               </motion.button>
             ))}
             
+            {/* Resume Button */}
+            {resumeUrl && (
+              <motion.a
+                href={resumeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2 rounded-full font-semibold text-sm transition-all",
+                  scrolled
+                    ? "bg-gradient-to-r from-primary-600 to-primary-500 text-white shadow-lg hover:shadow-xl"
+                    : "bg-white text-primary-600 hover:bg-gray-100"
+                )}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <FileText className="w-4 h-4" />
+                Resume
+              </motion.a>
+            )}
+            
             {/* Theme Toggle */}
             <motion.button
               onClick={toggleTheme}
-              className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              className={cn(
+                "p-2 rounded-full transition-colors",
+                scrolled 
+                  ? "bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  : "bg-white/20 backdrop-blur-sm hover:bg-white/30"
+              )}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
             >
               {theme === 'dark' ? (
                 <Sun className="w-5 h-5 text-yellow-500" />
               ) : (
-                <Moon className="w-5 h-5 text-gray-700" />
+                <Moon className={cn("w-5 h-5", scrolled ? "text-gray-700" : "text-white")} />
               )}
             </motion.button>
           </div>
@@ -84,19 +123,29 @@ export default function Navbar() {
           <div className="md:hidden flex items-center gap-4">
             <motion.button
               onClick={toggleTheme}
-              className="p-2 rounded-full bg-white/20 backdrop-blur-sm"
+              className={cn(
+                "p-2 rounded-full transition-colors",
+                scrolled 
+                  ? "bg-gray-100 dark:bg-gray-800"
+                  : "bg-white/20 backdrop-blur-sm"
+              )}
               whileTap={{ scale: 0.9 }}
             >
               {theme === 'dark' ? (
                 <Sun className="w-5 h-5 text-yellow-500" />
               ) : (
-                <Moon className="w-5 h-5 text-white" />
+                <Moon className={cn("w-5 h-5", scrolled ? "text-gray-700" : "text-white")} />
               )}
             </motion.button>
             
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-full bg-white/20 backdrop-blur-sm"
+              className={cn(
+                "p-2 rounded-full transition-colors",
+                scrolled 
+                  ? "bg-gray-100 dark:bg-gray-800"
+                  : "bg-white/20 backdrop-blur-sm"
+              )}
               style={{ color: scrolled ? undefined : 'white' }}
             >
               {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -127,6 +176,22 @@ export default function Navbar() {
                   {item.label}
                 </motion.button>
               ))}
+              
+              {/* Mobile Resume Button */}
+              {resumeUrl && (
+                <motion.a
+                  href={resumeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: NAV_ITEMS.length * 0.1 }}
+                  className="flex items-center gap-2 w-full mt-4 py-3 px-4 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-lg font-semibold text-center justify-center"
+                >
+                  <FileText className="w-4 h-4" />
+                  View Resume
+                </motion.a>
+              )}
             </div>
           </motion.div>
         )}

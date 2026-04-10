@@ -112,16 +112,16 @@ export default function ProjectsAdminPage() {
   return (
     <div className="max-w-4xl mx-auto">
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <CardTitle>Projects</CardTitle>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button onClick={openAddDialog}>
+              <Button onClick={openAddDialog} className="w-full sm:w-auto">
                 <Plus className="w-4 h-4 mr-2" />
                 Add Project
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-md mx-4">
               <DialogHeader>
                 <DialogTitle>{editingProject ? 'Edit Project' : 'Add Project'}</DialogTitle>
               </DialogHeader>
@@ -177,12 +177,12 @@ export default function ProjectsAdminPage() {
         <CardContent>
           <div className="space-y-4">
             {projects.map((project) => (
-              <div key={project.id} className="flex items-start justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white">{project.title}</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{project.techStack}</p>
+              <div key={project.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg overflow-hidden">
+                <div className="flex-1 min-w-0 w-full overflow-hidden">
+                  <h3 className="font-semibold text-gray-900 dark:text-white truncate">{project.title}</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{project.techStack}</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-shrink-0 self-end sm:self-center">
                   <Button variant="outline" size="sm" onClick={() => openEditDialog(project)}>
                     <Edit className="w-4 h-4" />
                   </Button>

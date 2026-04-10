@@ -1,11 +1,12 @@
 export const NAV_ITEMS = [
   { label: 'Home', href: '#home' },
   { label: 'About', href: '#about' },
+  { label: 'Education', href: '#education' },
   { label: 'Skills', href: '#skills' },
   { label: 'Projects', href: '#projects' },
   { label: 'Client Projects', href: '#client-projects' },
+  { label: 'Extra Curricular', href: '#extra-curricular' },
   { label: 'Contact', href: '#contact' },
-  { label: 'Resume', href: '#resume' },
 ];
 
 export const TOTAL_ANIMATION_FRAMES = 161;

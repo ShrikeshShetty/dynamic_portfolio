@@ -59,6 +59,7 @@ export const clientProjects = pgTable('client_projects', {
   title: text('title').notNull(),
   clientName: text('client_name').notNull(),
   description: text('description').notNull(),
+  liveUrl: text('live_url'),
   sortOrder: integer('sort_order').default(0),
   createdAt: timestamp('created_at').defaultNow(),
 });
@@ -81,6 +82,29 @@ export const resume = pgTable('resume', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
+// Education
+export const education = pgTable('education', {
+  id: varchar('id', { length: 36 }).primaryKey(),
+  level: varchar('level', { length: 20 }).notNull(), // 'HSC', 'UG', 'PG'
+  stream: text('stream').notNull(),
+  collegeName: text('college_name').notNull(),
+  academicYear: text('academic_year').notNull(),
+  cgpaOrPercentage: text('cgpa_or_percentage').notNull(),
+  sortOrder: integer('sort_order').default(0),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// Extra Curricular Activities
+export const extraCurricular = pgTable('extra_curricular', {
+  id: varchar('id', { length: 36 }).primaryKey(),
+  logo: text('logo').notNull(),
+  title: text('title').notNull(),
+  header: text('header').notNull(),
+  description: text('description').notNull(),
+  sortOrder: integer('sort_order').default(0),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 // Type exports
 export type HeroSection = typeof heroSection.$inferSelect;
 export type AboutSection = typeof aboutSection.$inferSelect;
@@ -89,3 +113,5 @@ export type Project = typeof projects.$inferSelect;
 export type ClientProject = typeof clientProjects.$inferSelect;
 export type ContactLink = typeof contactLinks.$inferSelect;
 export type Resume = typeof resume.$inferSelect;
+export type Education = typeof education.$inferSelect;
+export type ExtraCurricular = typeof extraCurricular.$inferSelect;

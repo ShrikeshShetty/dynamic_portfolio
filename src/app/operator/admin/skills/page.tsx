@@ -89,12 +89,13 @@ export default function SkillsAdminPage() {
         </CardHeader>
         <CardContent>
           {/* Category Tabs */}
-          <div className="flex gap-2 mb-6">
+          <div className="flex flex-wrap gap-2 mb-6">
             {(Object.keys(SKILL_CATEGORIES) as Array<keyof typeof SKILL_CATEGORIES>).map((cat) => (
               <Button
                 key={cat}
                 variant={activeCategory === cat ? 'default' : 'outline'}
                 onClick={() => setActiveCategory(cat)}
+                size="sm"
               >
                 {SKILL_CATEGORIES[cat]}
               </Button>
@@ -104,33 +105,36 @@ export default function SkillsAdminPage() {
           {/* Skills List */}
           <div className="space-y-4 mb-6">
             {categorySkills.map((skill) => (
-              <div key={skill.id} className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <div className="flex-1 grid grid-cols-2 gap-4">
-                  <Input
-                    value={skill.name}
-                    onChange={(e) => updateSkill(skill.id, { name: e.target.value })}
-                    placeholder="Skill name"
-                  />
-                  <div className="flex items-center gap-2">
+              <div key={skill.id} className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="flex-1 flex flex-col sm:flex-row gap-4">
                     <Input
-                      type="number"
-                      min={0}
-                      max={100}
-                      value={skill.percentage}
-                      onChange={(e) => updateSkill(skill.id, { percentage: parseInt(e.target.value) || 0 })}
-                      className="w-24"
+                      value={skill.name}
+                      onChange={(e) => updateSkill(skill.id, { name: e.target.value })}
+                      placeholder="Skill name"
+                      className="flex-1"
                     />
-                    <span className="text-gray-500">%</span>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        min={0}
+                        max={100}
+                        value={skill.percentage}
+                        onChange={(e) => updateSkill(skill.id, { percentage: parseInt(e.target.value) || 0 })}
+                        className="w-20"
+                      />
+                      <span className="text-gray-500">%</span>
+                    </div>
                   </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => deleteSkill(skill.id)}
+                    className="text-red-500 hover:text-red-700 self-end sm:self-center"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => deleteSkill(skill.id)}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
               </div>
             ))}
           </div>
@@ -141,7 +145,7 @@ export default function SkillsAdminPage() {
             </p>
           )}
 
-          <Button onClick={addSkill}>
+          <Button onClick={addSkill} className="w-full sm:w-auto">
             <Plus className="w-4 h-4 mr-2" />
             Add Skill
           </Button>

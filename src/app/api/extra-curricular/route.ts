@@ -1,53 +1,51 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { clientProjects } from '@/db/schema';
+import { extraCurricular } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { generateId } from '@/lib/utils';
 
 export async function GET() {
   try {
-    const allClientProjects = await db.select().from(clientProjects).orderBy(clientProjects.sortOrder);
-    return NextResponse.json(allClientProjects);
+    const allActivities = await db.select().from(extraCurricular).orderBy(extraCurricular.sortOrder);
+    return NextResponse.json(allActivities);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch client projects' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch extra curricular activities' }, { status: 500 });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const created = await db.insert(clientProjects).values({
+    const created = await db.insert(extraCurricular).values({
       id: generateId(),
-      coverImageUrl: body.coverImageUrl,
+      logo: body.logo,
       title: body.title,
-      clientName: body.clientName,
+      header: body.header,
       description: body.description,
-      liveUrl: body.liveUrl || null,
       sortOrder: body.sortOrder || 0,
     }).returning();
     return NextResponse.json(created[0]);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to create client project' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to create extra curricular activity' }, { status: 500 });
   }
 }
 
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const updated = await db.update(clientProjects)
+    const updated = await db.update(extraCurricular)
       .set({
-        coverImageUrl: body.coverImageUrl,
+        logo: body.logo,
         title: body.title,
-        clientName: body.clientName,
+        header: body.header,
         description: body.description,
-        liveUrl: body.liveUrl || null,
         sortOrder: body.sortOrder,
       })
-      .where(eq(clientProjects.id, body.id))
+      .where(eq(extraCurricular.id, body.id))
       .returning();
     return NextResponse.json(updated[0]);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to update client project' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to update extra curricular activity' }, { status: 500 });
   }
 }
 
@@ -57,9 +55,9 @@ export async function DELETE(request: NextRequest) {
     const id = searchParams.get('id');
     if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
     
-    await db.delete(clientProjects).where(eq(clientProjects.id, id));
+    await db.delete(extraCurricular).where(eq(extraCurricular.id, id));
     return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to delete client project' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to delete extra curricular activity' }, { status: 500 });
   }
 }
