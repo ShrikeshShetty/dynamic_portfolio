@@ -2,13 +2,52 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, Send, Bot, User } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, User, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
+}
+
+// Function to parse markdown-style links and render them
+function parseMessageContent(content: string) {
+  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = linkRegex.exec(content)) !== null) {
+    // Add text before the link
+    if (match.index > lastIndex) {
+      parts.push(content.substring(lastIndex, match.index));
+    }
+
+    // Add the link as a button
+    const [fullMatch, text, url] = match;
+    parts.push(
+      <a
+        key={match.index}
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-1 px-3 py-1.5 mt-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium transition-colors"
+      >
+        {text}
+        <ExternalLink className="w-3 h-3" />
+      </a>
+    );
+
+    lastIndex = match.index + fullMatch.length;
+  }
+
+  // Add remaining text
+  if (lastIndex < content.length) {
+    parts.push(content.substring(lastIndex));
+  }
+
+  return parts.length > 0 ? parts : content;
 }
 
 export default function Chatbot() {
@@ -43,7 +82,7 @@ export default function Chatbot() {
       });
 
       const data = await response.json();
-      
+
       setMessages(prev => [
         ...prev,
         { role: 'assistant', content: data.message || "I'm sorry, I couldn't process that request." },
@@ -113,7 +152,9 @@ export default function Chatbot() {
                         : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-bl-sm'
                     }`}
                   >
-                    <p className="text-sm">{msg.content}</p>
+                    <p className="text-sm whitespace-pre-wrap break-words" style={{ overflowWrap: 'anywhere' }}>
+                      {parseMessageContent(msg.content)}
+                    </p>
                   </div>
                   {msg.role === 'user' && (
                     <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">

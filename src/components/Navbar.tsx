@@ -33,14 +33,6 @@ export default function Navbar() {
       .catch(() => {});
   }, []);
 
-  const handleNavClick = (href: string) => {
-    setIsOpen(false);
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   return (
     <motion.nav
       initial={{ y: -100 }}
@@ -68,15 +60,15 @@ export default function Navbar() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
             {NAV_ITEMS.map((item) => (
-              <motion.button
+              <motion.a
                 key={item.href}
-                onClick={() => handleNavClick(item.href)}
+                href={item.href}
                 className="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors text-sm"
                 style={{ color: scrolled ? undefined : 'white' }}
                 whileHover={{ y: -2 }}
               >
                 {item.label}
-              </motion.button>
+              </motion.a>
             ))}
             
             {/* Resume Button */}
@@ -161,36 +153,32 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
             className="md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800"
           >
             <div className="container mx-auto px-4 py-4">
               {NAV_ITEMS.map((item, index) => (
-                <motion.button
+                <a
                   key={item.href}
-                  onClick={() => handleNavClick(item.href)}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
+                  href={item.href}
+                  onClick={() => setIsOpen(false)}
                   className="block w-full text-left py-3 text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
                 >
                   {item.label}
-                </motion.button>
+                </a>
               ))}
               
               {/* Mobile Resume Button */}
               {resumeUrl && (
-                <motion.a
+                <a
                   href={resumeUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: NAV_ITEMS.length * 0.1 }}
                   className="flex items-center gap-2 w-full mt-4 py-3 px-4 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-lg font-semibold text-center justify-center"
                 >
                   <FileText className="w-4 h-4" />
                   View Resume
-                </motion.a>
+                </a>
               )}
             </div>
           </motion.div>

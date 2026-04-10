@@ -262,18 +262,19 @@ export default function HeroSection({ heroData }: HeroSectionProps) {
 
         {/* Scroll indicator */}
         {scrollProgress < 0.1 && (
-          <motion.div
-            className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-            animate={{ y: [0, 10, 0] }}
-            transition={{ repeat: Infinity, duration: 1.5 }}
-          >
-            <div className="flex flex-col items-center text-white/80">
-              <span className="text-sm mb-2">Scroll to explore</span>
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-              </svg>
-            </div>
-          </motion.div>
+          <div className="absolute left-1/2 transform -translate-x-1/2 top-1/2 md:top-auto md:bottom-8 -translate-y-1/2 md:-translate-y-0">
+            <motion.div
+              animate={{ y: [0, 10, 0] }}
+              transition={{ repeat: Infinity, duration: 1.5 }}
+            >
+              <div className="flex flex-col items-center text-white/80">
+                <span className="text-sm mb-2">Scroll to explore</span>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </div>
+            </motion.div>
+          </div>
         )}
 
         {/* Continue scroll indicator */}
