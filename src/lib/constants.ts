@@ -4,7 +4,8 @@ export const NAV_ITEMS = [
   { label: 'Education', href: '#education' },
   { label: 'Skills', href: '#skills' },
   { label: 'Projects', href: '#projects' },
-  { label: 'Client Projects', href: '#client-projects' },
+  { label: 'Experience', href: '#experience' },
+  { label: 'Certifications', href: '#certifications' },
   { label: 'Extra Curricular', href: '#extra-curricular' },
   { label: 'Contact', href: '#contact' },
 ];

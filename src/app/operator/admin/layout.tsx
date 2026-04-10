@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   Home, User, Code, FolderKanban, Users, Link2, FileText, GraduationCap, Trophy,
-  Menu, X, LogOut, Settings, Shield, Sparkles, ChevronRight
+  Menu, X, LogOut, Settings, Shield, Sparkles, ChevronRight, Briefcase, Award
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -16,7 +16,8 @@ const navItems = [
   { label: 'About', href: '/operator/admin/about', icon: User, color: 'from-purple-500 to-pink-500' },
   { label: 'Skills', href: '/operator/admin/skills', icon: Code, color: 'from-green-500 to-emerald-500' },
   { label: 'Projects', href: '/operator/admin/projects', icon: FolderKanban, color: 'from-orange-500 to-amber-500' },
-  { label: 'Client Projects', href: '/operator/admin/client-projects', icon: Users, color: 'from-red-500 to-rose-500' },
+  { label: 'Experience', href: '/operator/admin/experience', icon: Briefcase, color: 'from-red-500 to-rose-500' },
+  { label: 'Certifications', href: '/operator/admin/certifications', icon: Award, color: 'from-amber-500 to-yellow-500' },
   { label: 'Contact Links', href: '/operator/admin/contact-links', icon: Link2, color: 'from-indigo-500 to-violet-500' },
   { label: 'Education', href: '/operator/admin/education', icon: GraduationCap, color: 'from-teal-500 to-cyan-500' },
   { label: 'Extra Curricular', href: '/operator/admin/extra-curricular', icon: Trophy, color: 'from-yellow-500 to-orange-500' },

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { heroSection, aboutSection, skills, projects, clientProjects, contactLinks, education, extraCurricular, resume } from '@/db/schema';
+import { heroSection, aboutSection, skills, projects, clientProjects, contactLinks, education, extraCurricular, resume, internships, certifications } from '@/db/schema';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     const { message, history } = await request.json() as { message: string; history: Message[] };
 
     // Fetch all portfolio data
-    const [hero, about, allSkills, allProjects, allClientProjects, allContactLinks, allEducation, allExtraCurricular, resumeData] = await Promise.all([
+    const [hero, about, allSkills, allProjects, allClientProjects, allContactLinks, allEducation, allExtraCurricular, resumeData, allInternships, allCertifications] = await Promise.all([
       db.select().from(heroSection).limit(1),
       db.select().from(aboutSection).limit(1),
       db.select().from(skills),
@@ -22,6 +22,8 @@ export async function POST(request: NextRequest) {
       db.select().from(education),
       db.select().from(extraCurricular),
       db.select().from(resume).limit(1),
+      db.select().from(internships),
+      db.select().from(certifications),
     ]);
 
     const lowerMessage = message.toLowerCase().trim();
@@ -226,6 +228,28 @@ export async function POST(request: NextRequest) {
       hasMatch = true;
     }
 
+    // Internships / Experience
+    const internshipKeywords = ['internship', 'intern', 'experience', 'work experience', 'company', 'worked at', 'professional experience'];
+    if (!hasMatch && internshipKeywords.some(k => lowerMessage.includes(k))) {
+      if (allInternships.length > 0) {
+        response = `Shrikesh's internship experience:\n\n${allInternships.map((i, idx) => `${idx + 1}. ${i.companyName} - ${i.role}\n   Project Lead: ${i.projectLead}\n   ${i.isTeamProject ? `Team of ${i.teamSize} members` : 'Individual project'}`).join('\n\n')}`;
+      } else {
+        response = "Internship information hasn't been added yet.";
+      }
+      hasMatch = true;
+    }
+
+    // Certifications
+    const certKeywords = ['certification', 'certificate', 'certified', 'credential', 'accreditation'];
+    if (!hasMatch && certKeywords.some(k => lowerMessage.includes(k))) {
+      if (allCertifications.length > 0) {
+        response = `Shrikesh's certifications:\n\n${allCertifications.map((c, i) => `${i + 1}. ${c.title}\n   Issued by: ${c.issuedBy}`).join('\n\n')}`;
+      } else {
+        response = "Certification information hasn't been added yet.";
+      }
+      hasMatch = true;
+    }
+
     // Name, who is, what is your name
     const nameKeywords = ['your name', 'what is your name', 'shrikesh', 'who is shrikesh', 'full name'];
     if (!hasMatch && nameKeywords.some(k => lowerMessage.includes(k))) {
@@ -251,7 +275,7 @@ export async function POST(request: NextRequest) {
     // Help, what can you do
     const helpKeywords = ['help', 'what can you do', 'what do you know', 'options', 'menu', 'commands'];
     if (!hasMatch && helpKeywords.some(k => lowerMessage.includes(k))) {
-      response = `I can help you learn about Shrikesh's:\n\n- Skills and technologies\n- Projects and work\n- Client projects\n- Contact information\n- Background and experience\n- Education\n- Extra curricular activities\n\nWhat would you like to know?`;
+      response = `I can help you learn about Shrikesh's:\n\n- Skills and technologies\n- Projects and work\n- Client projects\n- Internships and experience\n- Certifications\n- Contact information\n- Background and experience\n- Education\n- Extra curricular activities\n\nWhat would you like to know?`;
       hasMatch = true;
     }
 

@@ -64,6 +64,32 @@ export const clientProjects = pgTable('client_projects', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+// Internships
+export const internships = pgTable('internships', {
+  id: varchar('id', { length: 36 }).primaryKey(),
+  companyLogo: text('company_logo').notNull(),
+  companyName: text('company_name').notNull(),
+  role: text('role').notNull(),
+  projectLead: text('project_lead').notNull(),
+  isTeamProject: boolean('is_team_project').notNull().default(false),
+  teamSize: integer('team_size'),
+  offerLetterUrl: text('offer_letter_url').notNull(),
+  certificateUrl: text('certificate_url').notNull(),
+  lorUrl: text('lor_url'),
+  sortOrder: integer('sort_order').default(0),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// Certifications
+export const certifications = pgTable('certifications', {
+  id: varchar('id', { length: 36 }).primaryKey(),
+  title: text('title').notNull(),
+  issuedBy: text('issued_by').notNull(),
+  certificateUrl: text('certificate_url').notNull(),
+  sortOrder: integer('sort_order').default(0),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 // Contact Links
 export const contactLinks = pgTable('contact_links', {
   id: varchar('id', { length: 36 }).primaryKey(),
@@ -111,6 +137,8 @@ export type AboutSection = typeof aboutSection.$inferSelect;
 export type Skill = typeof skills.$inferSelect;
 export type Project = typeof projects.$inferSelect;
 export type ClientProject = typeof clientProjects.$inferSelect;
+export type Internship = typeof internships.$inferSelect;
+export type Certification = typeof certifications.$inferSelect;
 export type ContactLink = typeof contactLinks.$inferSelect;
 export type Resume = typeof resume.$inferSelect;
 export type Education = typeof education.$inferSelect;
