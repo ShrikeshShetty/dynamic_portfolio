@@ -33,6 +33,30 @@ export default function Navbar() {
       .catch(() => {});
   }, []);
 
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+
+    // Find the target element
+    const targetId = href.replace('#', '');
+    const element = document.getElementById(targetId);
+
+    // Close menu first
+    setIsOpen(false);
+
+    // Delay scroll to allow menu close animation
+    setTimeout(() => {
+      if (element) {
+        element.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    }, 300);
+
+    // Update URL hash
+    window.history.pushState(null, '', href);
+  };
+
   return (
     <motion.nav
       initial={{ y: -100 }}
@@ -50,6 +74,7 @@ export default function Navbar() {
           {/* Logo */}
           <motion.a
             href="#home"
+            onClick={(e) => handleNavClick(e, '#home')}
             className="text-xl font-bold text-gray-900 dark:text-white"
             whileHover={{ scale: 1.05 }}
             style={{ color: scrolled ? undefined : 'white' }}
@@ -63,6 +88,7 @@ export default function Navbar() {
               <motion.a
                 key={item.href}
                 href={item.href}
+                onClick={(e) => handleNavClick(e, item.href)}
                 className="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors text-sm"
                 style={{ color: scrolled ? undefined : 'white' }}
                 whileHover={{ y: -2 }}
@@ -161,13 +187,13 @@ export default function Navbar() {
                 <a
                   key={item.href}
                   href={item.href}
-                  onClick={() => setIsOpen(false)}
+                  onClick={(e) => handleNavClick(e, item.href)}
                   className="block w-full text-left py-3 text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
                 >
                   {item.label}
                 </a>
               ))}
-              
+
               {/* Mobile Resume Button */}
               {resumeUrl && (
                 <a
