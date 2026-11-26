@@ -23,13 +23,15 @@ export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
     const id = randomUUID();
-    
+
     await db.insert(internships).values({
       id,
       companyLogo: data.companyLogo,
       companyName: data.companyName,
       role: data.role,
       projectLead: data.projectLead,
+      startDate: data.startDate,
+      endDate: data.endDate,
       isTeamProject: data.isTeamProject || false,
       teamSize: data.teamSize || null,
       offerLetterUrl: data.offerLetterUrl,
@@ -58,6 +60,8 @@ export async function PUT(request: NextRequest) {
         companyName: updateData.companyName,
         role: updateData.role,
         projectLead: updateData.projectLead,
+        startDate: updateData.startDate,
+        endDate: updateData.endDate,
         isTeamProject: updateData.isTeamProject,
         teamSize: updateData.teamSize,
         offerLetterUrl: updateData.offerLetterUrl,

@@ -8,19 +8,20 @@ import EducationSection from '@/components/sections/EducationSection';
 import ExtraCurricularSection from '@/components/sections/ExtraCurricularSection';
 import ContactSection from '@/components/sections/ContactSection';
 import { db } from '@/db';
-import { heroSection, aboutSection, skills, projects, clientProjects, internships, certifications, education, extraCurricular, contactLinks } from '@/db/schema';
+import { heroSection, aboutSection, skills, projects, clientProjects, internships, professionalExperiences, certifications, education, extraCurricular, contactLinks } from '@/db/schema';
 
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
   // Fetch all data in parallel
-  const [heroData, aboutData, skillsData, projectsData, clientProjectsData, internshipsData, certificationsData, educationData, extraCurricularData, contactLinksData] = await Promise.all([
+  const [heroData, aboutData, skillsData, projectsData, clientProjectsData, internshipsData, professionalExperiencesData, certificationsData, educationData, extraCurricularData, contactLinksData] = await Promise.all([
     db.select().from(heroSection).limit(1).then(res => res[0] || null),
     db.select().from(aboutSection).limit(1).then(res => res[0] || null),
     db.select().from(skills),
     db.select().from(projects),
     db.select().from(clientProjects),
     db.select().from(internships),
+    db.select().from(professionalExperiences),
     db.select().from(certifications),
     db.select().from(education),
     db.select().from(extraCurricular),
@@ -34,7 +35,11 @@ export default async function HomePage() {
       <EducationSection education={educationData} />
       <SkillsSection skills={skillsData} />
       <ProjectsSection projects={projectsData} />
-      <ExperienceSection clientProjects={clientProjectsData} internships={internshipsData} />
+      <ExperienceSection 
+        clientProjects={clientProjectsData} 
+        internships={internshipsData} 
+        professionalExperiences={professionalExperiencesData}
+      />
       <CertificationsSection certifications={certificationsData} />
       <ExtraCurricularSection activities={extraCurricularData} />
       <ContactSection contactLinks={contactLinksData} />

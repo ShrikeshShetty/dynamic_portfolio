@@ -71,6 +71,8 @@ export const internships = pgTable('internships', {
   companyName: text('company_name').notNull(),
   role: text('role').notNull(),
   projectLead: text('project_lead').notNull(),
+  startDate: text('start_date').default(''),
+  endDate: text('end_date').default(''),
   isTeamProject: boolean('is_team_project').notNull().default(false),
   teamSize: integer('team_size'),
   offerLetterUrl: text('offer_letter_url').notNull(),
@@ -131,6 +133,22 @@ export const extraCurricular = pgTable('extra_curricular', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+// Professional Experience
+export const professionalExperiences = pgTable('professional_experiences', {
+  id: varchar('id', { length: 36 }).primaryKey(),
+  companyName: text('company_name').notNull(),
+  companyLogo: text('company_logo'),
+  role: text('role').notNull(),
+  responsibilities: text('responsibilities').notNull(),
+  startDate: text('start_date').notNull().default(''),
+  endDate: text('end_date').default(''),
+  isCurrent: boolean('is_current').notNull().default(false),
+  offerLetterUrl: text('offer_letter_url'),
+  experienceLetterUrl: text('experience_letter_url'),
+  sortOrder: integer('sort_order').default(0),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 // Type exports
 export type HeroSection = typeof heroSection.$inferSelect;
 export type AboutSection = typeof aboutSection.$inferSelect;
@@ -138,6 +156,7 @@ export type Skill = typeof skills.$inferSelect;
 export type Project = typeof projects.$inferSelect;
 export type ClientProject = typeof clientProjects.$inferSelect;
 export type Internship = typeof internships.$inferSelect;
+export type ProfessionalExperience = typeof professionalExperiences.$inferSelect;
 export type Certification = typeof certifications.$inferSelect;
 export type ContactLink = typeof contactLinks.$inferSelect;
 export type Resume = typeof resume.$inferSelect;

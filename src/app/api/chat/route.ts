@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { heroSection, aboutSection, skills, projects, clientProjects, contactLinks, education, extraCurricular, resume, internships, certifications } from '@/db/schema';
+import { heroSection, aboutSection, skills, projects, clientProjects, contactLinks, education, extraCurricular, resume, internships, professionalExperiences, certifications } from '@/db/schema';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     const { message, history } = await request.json() as { message: string; history: Message[] };
 
     // Fetch all portfolio data
-    const [hero, about, allSkills, allProjects, allClientProjects, allContactLinks, allEducation, allExtraCurricular, resumeData, allInternships, allCertifications] = await Promise.all([
+    const [hero, about, allSkills, allProjects, allClientProjects, allContactLinks, allEducation, allExtraCurricular, resumeData, allInternships, allProfessionalExperiences, allCertifications] = await Promise.all([
       db.select().from(heroSection).limit(1),
       db.select().from(aboutSection).limit(1),
       db.select().from(skills),
@@ -23,6 +23,7 @@ export async function POST(request: NextRequest) {
       db.select().from(extraCurricular),
       db.select().from(resume).limit(1),
       db.select().from(internships),
+      db.select().from(professionalExperiences),
       db.select().from(certifications),
     ]);
 
@@ -228,13 +229,31 @@ export async function POST(request: NextRequest) {
       hasMatch = true;
     }
 
-    // Internships / Experience
-    const internshipKeywords = ['internship', 'intern', 'experience', 'work experience', 'company', 'worked at', 'professional experience'];
-    if (!hasMatch && internshipKeywords.some(k => lowerMessage.includes(k))) {
-      if (allInternships.length > 0) {
-        response = `Shrikesh's internship experience:\n\n${allInternships.map((i, idx) => `${idx + 1}. ${i.companyName} - ${i.role}\n   Project Lead: ${i.projectLead}\n   ${i.isTeamProject ? `Team of ${i.teamSize} members` : 'Individual project'}`).join('\n\n')}`;
+    // Professional Experience / Job / Company
+    const profExpKeywords = ['job', 'professional experience', 'current job', 'company', 'employed', 'employment', 'where does he work', 'where do you work', 'responsibilities', 'work history'];
+    if (!hasMatch && profExpKeywords.some(k => lowerMessage.includes(k))) {
+      if (allProfessionalExperiences.length > 0) {
+        response = `Shrikesh's professional experience:\n\n${allProfessionalExperiences.map((p, idx) => `${idx + 1}. ${p.companyName} - ${p.role}\n   Duration: ${p.startDate} - ${p.isCurrent ? 'Present (Currently working here)' : p.endDate}\n   Responsibilities: ${p.responsibilities}`).join('\n\n')}`;
       } else {
-        response = "Internship information hasn't been added yet.";
+        response = "Professional experience details haven't been added yet.";
+      }
+      hasMatch = true;
+    }
+
+    // Internships / Experience
+    const internshipKeywords = ['internship', 'intern', 'experience', 'work experience', 'worked at'];
+    if (!hasMatch && internshipKeywords.some(k => lowerMessage.includes(k))) {
+      const parts: string[] = [];
+      if (allProfessionalExperiences.length > 0) {
+        parts.push(`Professional Experience:\n${allProfessionalExperiences.map((p, idx) => `${idx + 1}. ${p.companyName} - ${p.role} (${p.startDate} - ${p.isCurrent ? 'Present' : p.endDate})`).join('\n')}`);
+      }
+      if (allInternships.length > 0) {
+        parts.push(`Internships:\n${allInternships.map((i, idx) => `${idx + 1}. ${i.companyName} - ${i.role} (${i.startDate} - ${i.endDate})`).join('\n')}`);
+      }
+      if (parts.length > 0) {
+        response = parts.join('\n\n');
+      } else {
+        response = "Experience information hasn't been added yet.";
       }
       hasMatch = true;
     }

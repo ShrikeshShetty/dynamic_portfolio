@@ -32,6 +32,8 @@ export default function InternshipsManager() {
     companyName: '',
     role: '',
     projectLead: '',
+    startDate: '',
+    endDate: '',
     isTeamProject: false,
     teamSize: 0,
     offerLetterUrl: '',
@@ -85,6 +87,8 @@ export default function InternshipsManager() {
       companyName: internship.companyName,
       role: internship.role,
       projectLead: internship.projectLead,
+      startDate: internship.startDate || '',
+      endDate: internship.endDate || '',
       isTeamProject: internship.isTeamProject,
       teamSize: internship.teamSize || 0,
       offerLetterUrl: internship.offerLetterUrl,
@@ -101,6 +105,8 @@ export default function InternshipsManager() {
       companyName: '',
       role: '',
       projectLead: '',
+      startDate: '',
+      endDate: '',
       isTeamProject: false,
       teamSize: 0,
       offerLetterUrl: '',
@@ -233,6 +239,28 @@ export default function InternshipsManager() {
                   <Input
                     value={formData.projectLead}
                     onChange={(e) => setFormData({ ...formData, projectLead: e.target.value })}
+                    required
+                  />
+                </div>
+
+                {/* Start Date */}
+                <div>
+                  <label className="block text-sm font-medium mb-2">Start Date</label>
+                  <Input
+                    type="date"
+                    value={formData.startDate}
+                    onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                    required
+                  />
+                </div>
+
+                {/* End Date */}
+                <div>
+                  <label className="block text-sm font-medium mb-2">End Date</label>
+                  <Input
+                    type="date"
+                    value={formData.endDate}
+                    onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
                     required
                   />
                 </div>

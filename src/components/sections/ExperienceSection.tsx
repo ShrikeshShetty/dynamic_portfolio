@@ -3,19 +3,34 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { Briefcase, Building2, Users, User, ExternalLink, FileText, Award, Sparkles, Calendar, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import type { ClientProject, Internship } from '@/db/schema';
+import {
+  Briefcase,
+  Building2,
+  Users,
+  User,
+  ExternalLink,
+  FileText,
+  Award,
+  Calendar,
+  ChevronRight,
+} from 'lucide-react';
+import type { ClientProject, Internship, ProfessionalExperience } from '@/db/schema';
 
 interface ExperienceSectionProps {
   clientProjects: ClientProject[];
   internships: Internship[];
+  professionalExperiences?: ProfessionalExperience[];
 }
 
-export default function ExperienceSection({ clientProjects, internships }: ExperienceSectionProps) {
+export default function ExperienceSection({
+  clientProjects,
+  internships,
+  professionalExperiences = [],
+}: ExperienceSectionProps) {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
-  const [activeTab, setActiveTab] = useState<'client' | 'internship'>('client');
+  const [activeTab, setActiveTab] = useState<'professional' | 'client' | 'internship'>('professional');
   const [selectedInternship, setSelectedInternship] = useState<Internship | null>(null);
+  const [selectedExperience, setSelectedExperience] = useState<ProfessionalExperience | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -27,16 +42,19 @@ export default function ExperienceSection({ clientProjects, internships }: Exper
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
   };
 
   const cardVariants = {
     hidden: { opacity: 0, y: 30, scale: 0.95 },
-    visible: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 100 } }
+    visible: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 100 } },
   };
 
   return (
-    <section id="experience" className="py-24 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 relative overflow-hidden">
+    <section
+      id="experience"
+      className="py-24 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 relative overflow-hidden"
+    >
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl" />
@@ -65,10 +83,23 @@ export default function ExperienceSection({ clientProjects, internships }: Exper
 
           {/* Tabs */}
           <div className="flex justify-center mb-12">
-            <div className="inline-flex bg-gray-100 dark:bg-gray-800 rounded-full p-1">
+            <div className="inline-flex flex-wrap justify-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-full p-1 max-w-full">
+              <button
+                onClick={() => setActiveTab('professional')}
+                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${
+                  activeTab === 'professional'
+                    ? 'bg-white dark:bg-gray-700 text-primary-600 dark:text-primary-400 shadow-md'
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  <Briefcase className="w-4 h-4" />
+                  Professional Experience
+                </span>
+              </button>
               <button
                 onClick={() => setActiveTab('client')}
-                className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all ${
+                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${
                   activeTab === 'client'
                     ? 'bg-white dark:bg-gray-700 text-primary-600 dark:text-primary-400 shadow-md'
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
@@ -81,7 +112,7 @@ export default function ExperienceSection({ clientProjects, internships }: Exper
               </button>
               <button
                 onClick={() => setActiveTab('internship')}
-                className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all ${
+                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${
                   activeTab === 'internship'
                     ? 'bg-white dark:bg-gray-700 text-primary-600 dark:text-primary-400 shadow-md'
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
@@ -97,7 +128,113 @@ export default function ExperienceSection({ clientProjects, internships }: Exper
 
           {/* Content */}
           <AnimatePresence mode="wait">
-            {activeTab === 'client' ? (
+            {activeTab === 'professional' ? (
+              <motion.div
+                key="professional"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.3 }}
+              >
+                {professionalExperiences.length > 0 ? (
+                  <motion.div
+                    className="grid md:grid-cols-2 gap-6"
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="visible"
+                  >
+                    {professionalExperiences.map((exp) => (
+                      <motion.div
+                        key={exp.id}
+                        variants={cardVariants}
+                        onClick={() => setSelectedExperience(exp)}
+                        className="group cursor-pointer"
+                      >
+                        <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-700 h-full flex flex-col justify-between">
+                          <div className="p-6">
+                            <div className="flex items-start gap-4">
+                              {/* Company Logo */}
+                              <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 flex-shrink-0 flex items-center justify-center border border-gray-200 dark:border-gray-600">
+                                {exp.companyLogo ? (
+                                  <img
+                                    src={exp.companyLogo}
+                                    alt={exp.companyName}
+                                    className="w-full h-full object-contain p-2"
+                                  />
+                                ) : (
+                                  <Building2 className="w-8 h-8 text-primary-600 dark:text-primary-400" />
+                                )}
+                              </div>
+
+                              {/* Info */}
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 flex-wrap mb-1">
+                                  <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                                    {exp.companyName}
+                                  </h3>
+                                  {exp.isCurrent && (
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                                      Current Role
+                                    </span>
+                                  )}
+                                </div>
+
+                                <p className="text-primary-600 dark:text-primary-400 font-medium mb-2">
+                                  {exp.role}
+                                </p>
+
+                                <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm mb-3">
+                                  <Calendar className="w-4 h-4" />
+                                  <span>
+                                    {exp.startDate || 'N/A'} - {exp.isCurrent ? 'Present' : exp.endDate || 'N/A'}
+                                  </span>
+                                </div>
+
+                                <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-3 mb-2">
+                                  {exp.responsibilities}
+                                </p>
+                              </div>
+
+                              {/* Arrow */}
+                              <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-primary-600 group-hover:translate-x-1 transition-all flex-shrink-0" />
+                            </div>
+
+                            {/* Documents Preview */}
+                            <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 flex flex-wrap gap-4">
+                              {exp.offerLetterUrl && (
+                                <div className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400 font-medium">
+                                  <FileText className="w-3.5 h-3.5 text-primary-500" />
+                                  <span>Offer Letter</span>
+                                  <span className="text-emerald-500 font-bold">&#10003;</span>
+                                </div>
+                              )}
+
+                              {exp.experienceLetterUrl && (
+                                <div className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400 font-medium">
+                                  <Award className="w-3.5 h-3.5 text-amber-500" />
+                                  <span>Experience Letter</span>
+                                  <span className="text-emerald-500 font-bold">&#10003;</span>
+                                </div>
+                              )}
+
+                              {exp.isCurrent && !exp.experienceLetterUrl && (
+                                <span className="text-xs text-slate-400 italic">
+                                  Currently Employed
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                ) : (
+                  <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+                    No professional experience added yet.
+                  </div>
+                )}
+              </motion.div>
+            ) : activeTab === 'client' ? (
               <motion.div
                 key="client"
                 initial={{ opacity: 0, x: -20 }}
@@ -216,6 +353,10 @@ export default function ExperienceSection({ clientProjects, internships }: Exper
                                 <p className="text-primary-600 dark:text-primary-400 font-medium mb-2">
                                   {internship.role}
                                 </p>
+                                <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm mb-2">
+                                  <Calendar className="w-4 h-4" />
+                                  <span>{internship.startDate} - {internship.endDate}</span>
+                                </div>
                                 <div className="flex flex-wrap gap-3 text-sm text-gray-500 dark:text-gray-400">
                                   <span className="flex items-center gap-1">
                                     <User className="w-4 h-4" />
@@ -250,18 +391,18 @@ export default function ExperienceSection({ clientProjects, internships }: Exper
                               <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
                                 <FileText className="w-3 h-3" />
                                 <span>Offer Letter</span>
-                                <span className="text-green-500">{'\u2713'}</span>
+                                <span className="text-green-500">&#10003;</span>
                               </div>
                               <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
                                 <Award className="w-3 h-3" />
                                 <span>Certificate</span>
-                                <span className="text-green-500">{'\u2713'}</span>
+                                <span className="text-green-500">&#10003;</span>
                               </div>
                               {internship.lorUrl && (
                                 <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
                                   <FileText className="w-3 h-3" />
                                   <span>LOR</span>
-                                  <span className="text-green-500">{'\u2713'}</span>
+                                  <span className="text-green-500">&#10003;</span>
                                 </div>
                               )}
                             </div>
@@ -280,6 +421,136 @@ export default function ExperienceSection({ clientProjects, internships }: Exper
           </AnimatePresence>
         </motion.div>
       </div>
+
+      {/* Professional Experience Detail Modal */}
+      <AnimatePresence>
+        {selectedExperience && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setSelectedExperience(null)}
+            />
+
+            <motion.div
+              className="relative bg-white dark:bg-gray-900 rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+            >
+              <div className="p-8">
+                {/* Header */}
+                <div className="flex items-start gap-6 mb-6">
+                  <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-800 flex-shrink-0 flex items-center justify-center border border-gray-200 dark:border-gray-700">
+                    {selectedExperience.companyLogo ? (
+                      <img
+                        src={selectedExperience.companyLogo}
+                        alt={selectedExperience.companyName}
+                        className="w-full h-full object-contain p-3"
+                      />
+                    ) : (
+                      <Building2 className="w-10 h-10 text-primary-600 dark:text-primary-400" />
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                        {selectedExperience.companyName}
+                      </h3>
+                      {selectedExperience.isCurrent && (
+                        <span className="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                          Current Role
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-primary-600 dark:text-primary-400 font-medium text-lg">
+                      {selectedExperience.role}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Details */}
+                <div className="space-y-4 mb-6">
+                  <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
+                    <Calendar className="w-5 h-5 text-primary-500" />
+                    <span className="font-medium">Duration:</span>
+                    <span>
+                      {selectedExperience.startDate} -{' '}
+                      {selectedExperience.isCurrent ? 'Present' : selectedExperience.endDate}
+                    </span>
+                  </div>
+
+                  <div>
+                    <h4 className="text-base font-semibold text-gray-900 dark:text-white mb-2">
+                      Key Responsibilities & Impact
+                    </h4>
+                    <div className="p-4 bg-gray-50 dark:bg-gray-800/60 rounded-xl border border-gray-100 dark:border-gray-800 text-gray-700 dark:text-gray-300 text-sm whitespace-pre-line leading-relaxed">
+                      {selectedExperience.responsibilities}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Documents */}
+                {(selectedExperience.offerLetterUrl || selectedExperience.experienceLetterUrl) && (
+                  <div className="space-y-3 mb-6">
+                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                      Documents & Verification
+                    </h4>
+
+                    {selectedExperience.offerLetterUrl && (
+                      <a
+                        href={selectedExperience.offerLetterUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border border-gray-100 dark:border-gray-700"
+                      >
+                        <div className="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                          <FileText className="w-5 h-5 text-red-600 dark:text-red-400" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-gray-900 dark:text-white">Offer Letter</p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">View Document / PDF</p>
+                        </div>
+                        <ExternalLink className="w-5 h-5 text-gray-400" />
+                      </a>
+                    )}
+
+                    {selectedExperience.experienceLetterUrl && (
+                      <a
+                        href={selectedExperience.experienceLetterUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border border-gray-100 dark:border-gray-700"
+                      >
+                        <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                          <Award className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-gray-900 dark:text-white">Experience Letter</p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">View Document / PDF</p>
+                        </div>
+                        <ExternalLink className="w-5 h-5 text-gray-400" />
+                      </a>
+                    )}
+                  </div>
+                )}
+
+                {/* Close Button */}
+                <button
+                  onClick={() => setSelectedExperience(null)}
+                  className="w-full py-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Internship Detail Modal */}
       <AnimatePresence>
@@ -323,6 +594,11 @@ export default function ExperienceSection({ clientProjects, internships }: Exper
 
                 {/* Details */}
                 <div className="space-y-4 mb-8">
+                  <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
+                    <Calendar className="w-5 h-5 text-primary-500" />
+                    <span className="font-medium">Duration:</span>
+                    <span>{selectedInternship.startDate} - {selectedInternship.endDate}</span>
+                  </div>
                   <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300">
                     <User className="w-5 h-5 text-primary-500" />
                     <span className="font-medium">Project Lead:</span>
